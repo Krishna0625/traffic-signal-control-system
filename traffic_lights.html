@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Lights</title>
+
+    <title>Traffic Lights Module</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #f2f2f2;
-        }
-
-        h1 {
-            margin-top: 30px;
+            padding: 40px;
         }
 
         .traffic-light {
-            width: 120px;
+            width: 150px;
             background-color: #222;
             padding: 20px;
             margin: 30px auto;
@@ -25,10 +23,15 @@
         }
 
         .light {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             margin: 15px auto;
+            opacity: 0.25;
+        }
+
+        .active {
+            opacity: 1;
         }
 
         .red {
@@ -42,20 +45,96 @@
         .green {
             background-color: green;
         }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #status {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px;
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>Traffic Signal Control System</h1>
+    <h1>🚦 Traffic Lights</h1>
 
     <div class="traffic-light">
-        <div class="light red"></div>
-        <div class="light yellow"></div>
-        <div class="light green"></div>
+
+        <div id="red" class="light red active"></div>
+
+        <div id="yellow" class="light yellow"></div>
+
+        <div id="green" class="light green"></div>
+
     </div>
 
-    <p>Traffic Lights Module</p>
+    <div id="status">
+        RED - STOP
+    </div>
+
+    <button onclick="changeLight()">
+        Change Signal
+    </button>
+
+    <script>
+
+        let currentLight = "RED";
+
+        function changeLight() {
+
+            document.getElementById("red")
+                .classList.remove("active");
+
+            document.getElementById("yellow")
+                .classList.remove("active");
+
+            document.getElementById("green")
+                .classList.remove("active");
+
+
+            if (currentLight === "RED") {
+
+                currentLight = "GREEN";
+
+                document.getElementById("green")
+                    .classList.add("active");
+
+                document.getElementById("status")
+                    .innerText = "GREEN - GO";
+
+            }
+
+            else if (currentLight === "GREEN") {
+
+                currentLight = "YELLOW";
+
+                document.getElementById("yellow")
+                    .classList.add("active");
+
+                document.getElementById("status")
+                    .innerText = "YELLOW - WAIT";
+
+            }
+
+            else {
+
+                currentLight = "RED";
+
+                document.getElementById("red")
+                    .classList.add("active");
+
+                document.getElementById("status")
+                    .innerText = "RED - STOP";
+            }
+        }
+
+    </script>
 
 </body>
 </html>
