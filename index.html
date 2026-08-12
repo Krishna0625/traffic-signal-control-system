@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,103 +8,342 @@
     <title>Traffic Signal Control System</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f2f2f2;
             margin: 0;
-            padding: 40px;
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            text-align: center;
         }
 
-        h1 {
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #555;
-        }
-
-        .modules {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .module {
-            width: 220px;
-            padding: 25px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .module h2 {
-            font-size: 22px;
-        }
-
-        .module a {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 18px;
-            background-color: #333;
+        header {
+            background: #222;
             color: white;
-            text-decoration: none;
-            border-radius: 5px;
+            padding: 25px;
         }
 
-        .module a:hover {
-            background-color: #555;
+        .system {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .traffic-light {
+            width: 150px;
+            background: #222;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 20px;
+        }
+
+        .light {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 15px auto;
+            opacity: 0.25;
+        }
+
+        .active {
+            opacity: 1;
+        }
+
+        .red {
+            background: red;
+        }
+
+        .yellow {
+            background: yellow;
+        }
+
+        .green {
+            background: green;
+        }
+
+        #signal-status {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        #timer {
+            font-size: 55px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        #start-btn {
+            background: green;
+            color: white;
+        }
+
+        #pedestrian-btn {
+            background: #333;
+            color: white;
+        }
+
+        #reset-btn {
+            background: #777;
+            color: white;
+        }
+
+        #pedestrian-status {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>🚦 Traffic Signal Control System</h1>
+    <header>
+        <h1>🚦 Traffic Signal Control System</h1>
+        <p>Traffic Lights • Timer • Pedestrian Crossing</p>
+    </header>
 
-    <p>
-        A simple web-based system for managing traffic signals,
-        timers, and pedestrian crossings.
-    </p>
+    <div class="system">
 
-    <div class="modules">
+        <div class="traffic-light">
 
-        <div class="module">
-            <h2>🚦 Traffic Lights</h2>
-            <p>
-                View and manage the basic traffic signal lights.
-            </p>
+            <div id="red-light" class="light red"></div>
 
-            <a href="traffic_lights.html">
-                Open Module
-            </a>
+            <div id="yellow-light" class="light yellow"></div>
+
+            <div id="green-light" class="light green"></div>
+
         </div>
 
-        <div class="module">
-            <h2>⏱️ Timer</h2>
-            <p>
-                Control the countdown timer for traffic signals.
-            </p>
-
-            <a href="timer.html">
-                Open Module
-            </a>
+        <div id="signal-status">
+            RED
         </div>
 
-        <div class="module">
-            <h2>🚶 Pedestrian Crossing</h2>
-            <p>
-                Request a pedestrian crossing and temporarily stop traffic.
-            </p>
+        <div id="timer">
+            30
+        </div>
 
-            <a href="pedestrian_crossing.html">
-                Open Module
-            </a>
+        <button id="start-btn" onclick="startSystem()">
+            Start System
+        </button>
+
+        <button id="pedestrian-btn" onclick="requestCrossing()">
+            🚶 Request Crossing
+        </button>
+
+        <button id="reset-btn" onclick="resetSystem()">
+            Reset
+        </button>
+
+        <div id="pedestrian-status">
+            Pedestrian: Waiting
         </div>
 
     </div>
 
+    <script>
+
+        let currentSignal = "RED";
+
+        let timeRemaining = 30;
+
+        let timerInterval = null;
+
+        let pedestrianRequest = false;
+
+        const durations = {
+            RED: 30,
+            GREEN: 30,
+            YELLOW: 5
+        };
+
+
+        function updateLights() {
+
+            document.getElementById("red-light")
+                .classList.remove("active");
+
+            document.getElementById("yellow-light")
+                .classList.remove("active");
+
+            document.getElementById("green-light")
+                .classList.remove("active");
+
+
+            if (currentSignal === "RED") {
+
+                document.getElementById("red-light")
+                    .classList.add("active");
+
+            }
+
+            else if (currentSignal === "YELLOW") {
+
+                document.getElementById("yellow-light")
+                    .classList.add("active");
+
+            }
+
+            else if (currentSignal === "GREEN") {
+
+                document.getElementById("green-light")
+                    .classList.add("active");
+
+            }
+
+
+            document.getElementById("signal-status")
+                .innerText = currentSignal;
+
+        }
+
+
+        function startSystem() {
+
+            if (timerInterval !== null) {
+                return;
+            }
+
+            updateLights();
+
+            timerInterval = setInterval(function () {
+
+                timeRemaining--;
+
+                document.getElementById("timer")
+                    .innerText = timeRemaining;
+
+
+                if (timeRemaining <= 0) {
+
+                    changeSignal();
+
+                }
+
+            }, 1000);
+
+        }
+
+
+        function changeSignal() {
+
+            if (currentSignal === "RED") {
+
+                currentSignal = "GREEN";
+
+                timeRemaining = durations.GREEN;
+
+            }
+
+            else if (currentSignal === "GREEN") {
+
+                currentSignal = "YELLOW";
+
+                timeRemaining = durations.YELLOW;
+
+            }
+
+            else if (currentSignal === "YELLOW") {
+
+                currentSignal = "RED";
+
+                timeRemaining = durations.RED;
+
+            }
+
+
+            updateLights();
+
+            document.getElementById("timer")
+                .innerText = timeRemaining;
+
+
+            if (pedestrianRequest && currentSignal === "RED") {
+
+                allowPedestrianCrossing();
+
+            }
+
+        }
+
+
+        function requestCrossing() {
+
+            pedestrianRequest = true;
+
+            document.getElementById("pedestrian-status")
+                .innerText = "Pedestrian: Crossing requested";
+
+
+            if (currentSignal === "RED") {
+
+                allowPedestrianCrossing();
+
+            }
+
+        }
+
+
+        function allowPedestrianCrossing() {
+
+            pedestrianRequest = false;
+
+            document.getElementById("pedestrian-status")
+                .innerText = "Pedestrian: CROSS NOW";
+
+            setTimeout(function () {
+
+                document.getElementById("pedestrian-status")
+                    .innerText = "Pedestrian: Waiting";
+
+            }, 5000);
+
+        }
+
+
+        function resetSystem() {
+
+            clearInterval(timerInterval);
+
+            timerInterval = null;
+
+            currentSignal = "RED";
+
+            timeRemaining = durations.RED;
+
+            pedestrianRequest = false;
+
+
+            document.getElementById("timer")
+                .innerText = timeRemaining;
+
+            document.getElementById("pedestrian-status")
+                .innerText = "Pedestrian: Waiting";
+
+
+            updateLights();
+
+        }
+
+
+        updateLights();
+
+    </script>
+
 </body>
+
 </html>
