@@ -1,1 +1,75 @@
-Timer Module 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Signal Timer</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            margin-top: 40px;
+        }
+
+        #timer {
+            font-size: 60px;
+            margin: 30px;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Traffic Signal Timer</h1>
+
+    <div id="signal">RED</div>
+
+    <div id="timer">30</div>
+
+    <button onclick="startTimer()">Start</button>
+    <button onclick="resetTimer()">Reset</button>
+
+    <script>
+        let time = 30;
+        let interval;
+
+        function startTimer() {
+            clearInterval(interval);
+
+            interval = setInterval(function () {
+
+                if (time > 0) {
+                    time--;
+                    document.getElementById("timer").innerText = time;
+                } else {
+                    clearInterval(interval);
+                    document.getElementById("signal").innerText = "GREEN";
+                }
+
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            time = 30;
+
+            document.getElementById("timer").innerText = time;
+            document.getElementById("signal").innerText = "RED";
+        }
+    </script>
+
+</body>
+</html>
