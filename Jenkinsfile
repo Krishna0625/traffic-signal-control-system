@@ -18,7 +18,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing Traffic Signal Control System'
-                bat 'dir'
+                sh 'ls -la'
             }
         }
 
